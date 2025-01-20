@@ -3,13 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link   rel="stylesheet" type="text/css" href="../css/style.css" />
   <title>Writer</title>
-  <script defer src="../js/writer.js"></script>
 </head>
 <body>
   <h1>Writer</h1>
-  <button id="add-note">Add Note</button>
   <div id="notes"></div>
-  <p>Last saved at: <span id="last-saved">Never</span></p>
+  <button id="add-note">Add Note</button>
+  <p class="update-time">Last saved at: <span id="last-saved">Never</span></p>
+<div class="back-button-container">
+  <button onclick="goBack()" class="back-button">Back to Home</button>
+</div>
+
+
+<script src="../js/writer.js"></script>
+
 </body>
 </html>

@@ -3,12 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link   rel="stylesheet" type="text/css" href="../css/style.css" />
   <title>Reader</title>
-  <script defer src="../js/reader.js"></script>
 </head>
 <body>
   <h1>Reader</h1>
-  <p>Last updated at: <span id="last-updated">Never</span></p>
+
   <div id="notes"></div>
+  <div class="back-button-container">
+    <button onclick="goBack()" class="back-button">Back to Home</button>
+  </div>
+  <p class="update-time">Last updated at: <span id="last-updated">Never</span></p>
+  <script src="../js/reader.js"></script>
 </body>
 </html>
