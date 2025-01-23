@@ -1,86 +1,83 @@
 // Note class to represent individual notes
-// Each note stores a content string, which is initially empty by default
 class Note {
   constructor(content = "") {
       this.content = content;
   }
 }
 
-// Utility function to load notes from localStorage
-function loadNotes() {
-  // Retrieve stored notes from localStorage, parsing the JSON string
-  const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
-  
-  // Convert stored objects into instances of the Note class
-  return storedNotes.map((note) => new Note(note.content));
-}
+// NotesManager class to handle note storage, rendering, and interactions
+class NotesManager {
+  constructor() {
+      this.notes = this.loadNotes(); // Load existing notes from storage
+      this.init();
+  }
 
-// Utility function to save notes to localStorage
-function saveNotes(notes) {
-  // Store the updated notes array as a JSON string in localStorage
-  localStorage.setItem("notes", JSON.stringify(notes));
+  // Load notes from localStorage
+  loadNotes() {
+      const storedNotes = JSON.parse(localStorage.getItem("notes")) || [];
+      return storedNotes.map(note => new Note(note.content));
+  }
 
-  // Update the "Last Saved" timestamp on the page
-  document.getElementById("last-saved").textContent = new Date().toLocaleTimeString();
-}
-/*chat gpt was used to help write initial renderNotes function before editing */
-// Function to render all notes on the page
-function renderNotes(notes) {
-  const notesContainer = document.getElementById("notes"); // Get the container for notes
-  notesContainer.innerHTML = ""; // Clear existing content before re-rendering
+  // Save notes to localStorage
+  saveNotes() {
+      localStorage.setItem("notes", JSON.stringify(this.notes));
+      document.getElementById("last-saved").textContent = new Date().toLocaleTimeString();
+  }
 
-  notes.forEach((note, index) => {
-      const noteDiv = document.createElement("div"); // Create a container for each note
+  // Render notes to the page
+  renderNotes() {
+      const notesContainer = document.getElementById("notes");
+      notesContainer.innerHTML = ""; // Clear existing content
 
-      // Create a text area for editing the note's content
-      const textArea = document.createElement("textarea");
-      textArea.value = note.content; // Set initial value from note data
+      this.notes.forEach((note, index) => {
+          const noteDiv = document.createElement("div");
 
-      // Update the corresponding note content when the user types
-      textArea.addEventListener("input", (e) => {
-          notes[index].content = e.target.value;
+          // Create a text area for editing note content
+          const textArea = document.createElement("textarea");
+          textArea.value = note.content;
+          textArea.addEventListener("input", (e) => {
+              this.notes[index].content = e.target.value;
+          });
+
+          // Create a remove button for each note
+          const removeButton = document.createElement("button");
+          removeButton.textContent = "Remove";
+          removeButton.classList.add("remove-button");
+
+          // Remove note from the list
+          removeButton.addEventListener("click", () => {
+              this.notes.splice(index, 1);
+              this.renderNotes();
+          });
+
+          // Append elements to note container
+          noteDiv.appendChild(textArea);
+          noteDiv.appendChild(removeButton);
+          notesContainer.appendChild(noteDiv);
       });
 
-      // Create a "Remove" button to delete the note
-      const removeButton = document.createElement("button");
-      removeButton.textContent = "Remove"; // Set button text
-      removeButton.classList.add("remove-button"); // Apply styling class
+      // Save updated notes
+      this.saveNotes();
+  }
 
-      // Remove the note from the list when clicked and re-render the notes
-      removeButton.addEventListener("click", () => {
-          notes.splice(index, 1); // Remove the note from the array
-          renderNotes(notes); // Re-render the notes list
-      });
+  // Add a new empty note and re-render
+  addNote() {
+      this.notes.push(new Note());
+      this.renderNotes();
+  }
 
-      // Append the text area and remove button to the note container
-      noteDiv.appendChild(textArea);
-      noteDiv.appendChild(removeButton);
-
-      // Append the note container to the main notes section
-      notesContainer.appendChild(noteDiv);
-  });
-
-  // Save the updated notes list to localStorage
-  saveNotes(notes);
+  // Initialize event listeners and set up autosave
+  init() {
+      document.getElementById("add-note").addEventListener("click", () => this.addNote());
+      this.renderNotes();
+      setInterval(() => this.saveNotes(), 2000); // Autosave every 2 seconds
+  }
 }
 
-// Event listener to run once the page has loaded
-document.addEventListener("DOMContentLoaded", () => {
-  const notes = loadNotes(); // Load existing notes from storage
+// Initialize the NotesManager when the page loads
+document.addEventListener("DOMContentLoaded", () => new NotesManager());
 
-  // Add a new note when the "Add Note" button is clicked
-  document.getElementById("add-note").addEventListener("click", () => {
-      notes.push(new Note()); // Add a new empty note to the list
-      renderNotes(notes); // Re-render the notes list
-  });
-
-  renderNotes(notes); // Display all loaded notes
-
-  // Automatically save notes every 2 seconds (autosave feature)
-  setInterval(() => saveNotes(notes), 2000);
-});
-
-// Function to navigate back to the index.html page
+// Function to navigate back to index.html
 function goBack() {
-  window.location.href = "../index.html"; // Navigate one directory up
+  window.location.href = "../index.html";
 }

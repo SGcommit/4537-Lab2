@@ -1,44 +1,46 @@
-// Function to load notes from localStorage
-function loadNotes() {
-  // Retrieve stored notes from localStorage, parsing the JSON string
-  // If no notes exist, return an empty array to avoid errors
-  return JSON.parse(localStorage.getItem("notes")) || [];
+// NotesReader class to handle loading and displaying notes
+class NotesReader {
+  constructor() {
+      this.init();
+  }
+
+  // Load notes from localStorage
+  loadNotes() {
+      return JSON.parse(localStorage.getItem("notes")) || [];
+  }
+
+  // Render notes to the page
+  renderNotes() {
+      const notesContainer = document.getElementById("notes");
+      notesContainer.innerHTML = ""; // Clear existing content
+
+      const notes = this.loadNotes();
+      notes.forEach(note => {
+          const noteDiv = document.createElement("div");
+          noteDiv.classList.add("note-container");
+
+          const noteContent = document.createElement("p");
+          noteContent.textContent = note.content;
+
+          noteDiv.appendChild(noteContent);
+          notesContainer.appendChild(noteDiv);
+      });
+
+      // Update last-updated timestamp
+      document.getElementById("last-updated").textContent = new Date().toLocaleTimeString();
+  }
+
+  // Periodically refresh displayed notes
+  init() {
+      this.renderNotes();
+      setInterval(() => this.renderNotes(), 2000); // Refresh every 2 seconds
+  }
 }
-/*chat gpt was used to help write initial renderNotes function before editing */
-// Function to render notes on the page
-function renderNotes(notes) {
-  const notesContainer = document.getElementById("notes"); // Get the container for displaying notes
-  notesContainer.innerHTML = ""; // Clear any existing content before re-rendering
 
-  notes.forEach((note) => {
-      const noteDiv = document.createElement("div"); // Create a container for each note
-      noteDiv.classList.add("note-container"); // Apply a CSS class for styling
+// Initialize the NotesReader when the page loads
+document.addEventListener("DOMContentLoaded", () => new NotesReader());
 
-      const noteContent = document.createElement("p"); // Create a paragraph for note text
-      noteContent.textContent = note.content; // Set the note text content
-
-      noteDiv.appendChild(noteContent); // Add the note text inside the note container
-      notesContainer.appendChild(noteDiv); // Append the note container to the main section
-  });
-
-  // Update the "Last Updated" timestamp on the page
-  document.getElementById("last-updated").textContent = new Date().toLocaleTimeString();
-}
-
-// When the document has fully loaded, run the following:
-document.addEventListener("DOMContentLoaded", () => {
-  const updateNotes = () => {
-      const notes = loadNotes(); // Load stored notes from localStorage
-      renderNotes(notes); // Render the loaded notes on the page
-  };
-
-  updateNotes(); // Initial rendering of notes
-
-  // Automatically refresh the notes display every 2 seconds
-  setInterval(updateNotes, 2000);
-});
-
-// Function to navigate back to the index.html page
+// Function to navigate back to index.html
 function goBack() {
-  window.location.href = "../index.html"; // Navigate one directory up
+  window.location.href = "../index.html";
 }
